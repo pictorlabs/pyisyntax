@@ -1,0 +1,15 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+
+graft isyntax_build
+prune isyntax_build/vendor/libisyntax
+graft isyntax_build/vendor/libisyntax/src
+include isyntax_build/vendor/libisyntax/LICENSE.txt
+include isyntax_build/vendor/libisyntax/README.md
+
+graft tests
+recursive-exclude tests *.isyntax
+
+prune */.pytest_cache
+prune */__pycache__
