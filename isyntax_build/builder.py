@@ -42,12 +42,6 @@ def create_ffibuilder() -> FFI:
         platform_sources = []
         extra_compile_args = []
         libraries = []
-        # The vendored libisyntax guards its SIMD/atomics on x86-centric macros
-        # that GCC does not define on aarch64 Linux, so the arm build otherwise
-        # fails to compile / links x86-only intrinsics. Select the correct paths:
-        #   __ARM_NEON__ -> intrinsics.h includes <arm_neon.h> for the NEON code
-        #   __arm64      -> ltalloc spin-wait uses sched_yield, not x86 `pause`
-        #   the last two map x86-only bit intrinsics onto portable GCC builtins
         if platform.machine() in ("aarch64", "arm64"):
             extra_compile_args += [
                 "-D__ARM_NEON__=1",

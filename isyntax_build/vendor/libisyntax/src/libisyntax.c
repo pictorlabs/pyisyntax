@@ -397,10 +397,6 @@ void libisyntax_cache_destroy(isyntax_cache_t* isyntax_cache) {
 isyntax_error_t libisyntax_tile_read(isyntax_t* isyntax, isyntax_cache_t* isyntax_cache,
                                      int32_t level, int64_t tile_x, int64_t tile_y,
                                      uint32_t* pixels_buffer, int32_t pixel_format) {
-    // The read path dereferences the thread-local `local_thread_memory` arena.
-    // init_thread_pool() only sets it up for the init thread and libisyntax's
-    // own worker threads, so a read issued from any other caller thread (e.g. a
-    // host app's reader pool) would hit a NULL arena. Lazily initialize it here.
     if (local_thread_memory == NULL) {
         init_thread_memory(0, &global_system_info);
     }
@@ -420,8 +416,6 @@ isyntax_error_t libisyntax_tile_read(isyntax_t* isyntax, isyntax_cache_t* isynta
 isyntax_error_t libisyntax_read_region(isyntax_t* isyntax, isyntax_cache_t* isyntax_cache, int32_t level,
                                        int64_t x, int64_t y, int64_t width, int64_t height, uint32_t* pixels_buffer,
                                        int32_t pixel_format) {
-    // See libisyntax_tile_read: ensure this caller thread has its thread-local
-    // memory arena before the read path dereferences it.
     if (local_thread_memory == NULL) {
         init_thread_memory(0, &global_system_info);
     }
